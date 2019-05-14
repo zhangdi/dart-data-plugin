@@ -1,10 +1,7 @@
 package andrasferenczi.action
 
 import andrasferenczi.action.init.ActionData
-import andrasferenczi.action.utils.DartConstructorType
-import andrasferenczi.action.utils.createConstructorDeleteCallWithUserPrompt
-import andrasferenczi.action.utils.deleteAllPsiElements
-import andrasferenczi.action.utils.extractMethodConstructorInfos
+import andrasferenczi.action.utils.*
 import andrasferenczi.configuration.ConfigurationDataManager
 import andrasferenczi.declaration.DeclarationExtractor
 import andrasferenczi.declaration.canBeAssignedFromConstructor
@@ -15,10 +12,8 @@ import andrasferenczi.ext.runWriteAction
 import andrasferenczi.ext.setCaretSafe
 import andrasferenczi.templater.ConstructorTemplateParams
 import andrasferenczi.templater.createConstructorTemplate
-import andrasferenczi.utils.mergeCalls
 import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiDocumentManager
 import com.jetbrains.lang.dart.psi.DartClassDefinition
 
@@ -53,18 +48,19 @@ class NamedArgumentConstructorAction : BaseAnAction() {
             )
         )
 
-        val constructorDeleteCall = createConstructorDeleteCallWithUserPrompt(project, dartClass)
+        val cleanProcess = createConstructorPreCleanProcess(project, dartClass)
 
         project.runWriteAction {
-            constructorDeleteCall?.let {
+            cleanProcess.deleteCall?.let {
                 it.invoke()
 
                 PsiDocumentManager.getInstance(project)
                     .doPostponedOperationsAndUnblockDocument(editor.document)
             }
 
-            val anchor = editor.evalAnchorInClass(dartClass)
-            editor.setCaretSafe(dartClass, anchor.textRange.endOffset)
+            val caretPosition = cleanProcess.caretOffsetAfterDelete
+                ?: editor.evalAnchorInClass(dartClass).textRange.endOffset
+            editor.setCaretSafe(dartClass, caretPosition)
             templateManager.startTemplate(editor, template)
         }
     }
