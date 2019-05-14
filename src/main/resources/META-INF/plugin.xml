@@ -40,5 +40,13 @@
                           anchor="after"
                           relative-to-action="andrasferenczi.action.NamedArgumentConstructorAction"/>
         </action>
+
+        <!-- Only for testing-->
+        <!-- TODO: Uncomment when release-->
+        <action id="andrasferenczi._test.TesterAction"
+                class="andrasferenczi._test.TesterAction"
+                text="Run Dart Data Test">
+            <add-to-group group-id="GenerateGroup"/>
+        </action>
     </actions>
 </idea-plugin>

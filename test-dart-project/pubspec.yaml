@@ -1,0 +1,5 @@
+name: test_dart_project
+description: A sample command-line application.
+
+environment:
+  sdk: '>=2.1.0 <3.0.0'
