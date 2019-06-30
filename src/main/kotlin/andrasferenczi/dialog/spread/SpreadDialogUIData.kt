@@ -1,9 +1,6 @@
 package andrasferenczi.dialog.spread
 
-import andrasferenczi.intention.utils.FieldHint
-import andrasferenczi.intention.utils.HierarchicalVariableHint
-import andrasferenczi.intention.utils.VariableHint
-import andrasferenczi.intention.utils.VariableKind
+import andrasferenczi.intention.utils.*
 
 data class SpreadDialogButtonData(
     val variable: HierarchicalVariableHint
@@ -18,6 +15,21 @@ data class SpreadDialogVariableData(
     // If the button can set this value
     val isSettable: Boolean
 )
+
+fun CallCompletionData.toSpreadDialogUiData(): SpreadDialogUIData {
+    return SpreadDialogUIData(
+        buttons = this.variables.map { SpreadDialogButtonData(it) },
+        variables = this.arguments.map {
+            SpreadDialogVariableData(
+                isGenerated = true,
+                functionNamedArgumentName = it.name,
+                variableType = it.returnType,
+                assignedValue = "", // Will be filled out immediately
+                isSettable = true
+            )
+        }
+    ).applyAllFieldsOrdered()
+}
 
 data class SpreadDialogUIData(
     val buttons: List<SpreadDialogButtonData>,

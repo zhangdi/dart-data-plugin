@@ -1,20 +1,15 @@
 package andrasferenczi.spread_ui
 
 import andrasferenczi.dialog.spread.SpreadDialogDataManager
+import andrasferenczi.dialog.spread.SpreadDialogManagerImplementation
 import andrasferenczi.dialog.spread.SpreadDialogUIData
 import andrasferenczi.dialog.spread.SpreadDialogUtils
 import javax.swing.JFrame
 
 
-private class TestManager(
-    var onUpdateListener: ((data: SpreadDialogUIData) -> Unit)? = null
-) : SpreadDialogDataManager {
-
-    override var data: SpreadDialogUIData = SpreadDialogUIData.TEST_DATA
-        set(value) {
-            field = value
-            onUpdateListener?.invoke(value)
-        }
+private class TestManager : SpreadDialogManagerImplementation(
+    SpreadDialogUIData.TEST_DATA
+) {
 
     override fun update(updater: SpreadDialogUIData.() -> SpreadDialogUIData) {
         val newData = super.update(updater)

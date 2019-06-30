@@ -24,6 +24,11 @@ enum class VariableKind(val visibleName: String) {
     }
 }
 
+data class CallCompletionData(
+    val variables: List<HierarchicalVariableHint>,
+    val arguments: List<NamedArgumentHint>
+)
+
 data class HierarchicalVariableHint(
     val variableHint: VariableHint,
     val fieldHints: List<FieldHint>
