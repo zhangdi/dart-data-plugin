@@ -2,11 +2,38 @@ package andrasferenczi.intention.utils
 
 import org.dartlang.analysis.server.protocol.IncludedSuggestionRelevanceTag
 import org.dartlang.analysis.server.protocol.IncludedSuggestionSet
+import java.lang.RuntimeException
+
+// Todo: Field types as well
+enum class VariableKind(val visibleName: String) {
+    Parameter("Parameter"),
+    LocalVariable("Local Variable");
+
+    companion object {
+
+        fun fromElementKind(kind: DartServerCompletionUtils.SuggestionElementKind): VariableKind? =
+            tryFromElementKind(kind) ?: throw RuntimeException("Could not convert $kind to variable type.")
+
+        fun tryFromElementKind(kind: DartServerCompletionUtils.SuggestionElementKind): VariableKind? {
+            return when (kind) {
+                DartServerCompletionUtils.SuggestionElementKind.LocalVariable -> LocalVariable
+                DartServerCompletionUtils.SuggestionElementKind.Parameter -> Parameter
+                else -> null
+            }
+        }
+    }
+}
+
+data class HierarchicalVariableHint(
+    val variableHint: VariableHint,
+    val fieldHints: List<FieldHint>
+)
 
 data class VariableHint(
     val name: String,
+    val orderIndex: Int,
     val returnType: String,
-    val suggestionElementKind: DartServerCompletionUtils.SuggestionElementKind
+    val kind: VariableKind
 )
 
 data class FieldHint(
