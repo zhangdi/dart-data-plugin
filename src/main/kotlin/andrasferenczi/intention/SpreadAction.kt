@@ -1,11 +1,14 @@
 package andrasferenczi.intention
 
 import andrasferenczi.action.init.ActionData
-import andrasferenczi.action.init.extractCurrentElement
 import andrasferenczi.action.init.tryCreateActionData
 import andrasferenczi.constants.Constants
 import andrasferenczi.dialog.spread.SelectionResult
 import andrasferenczi.dialog.spread.SpreadDialog
+import andrasferenczi.dialog.spread.toFunctionInnerText
+import andrasferenczi.ext.deleteString
+import andrasferenczi.ext.isInDartFile
+import andrasferenczi.ext.runWriteAction
 import andrasferenczi.intention.utils.*
 import andrasferenczi.intention.utils.DartServerCompletionUtils.getCompletions
 import com.intellij.notification.Notification
@@ -13,45 +16,28 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.lang.dart.analyzer.DartAnalysisServerService
-import com.jetbrains.lang.dart.psi.DartFile
-import org.dartlang.analysis.server.protocol.SearchResult
 
 class SpreadAction : AnAction() {
 
-    fun execute(project: Project, caret: Caret, file: DartFile) {
-        val selectedElement = extractCurrentElement(file, caret)
+    override fun startInTransaction(): Boolean = true
 
-        val document = FileDocumentManager.getInstance().getDocument(file.virtualFile)
-            ?: throw RuntimeException("Could not get the current document")
-        val originalCode = document.text
-
-    }
-
-    fun findElementReferences(
-        project: Project,
-        file: VirtualFile,
-        offset: Int,
-        includePotential: Boolean
-    ): List<SearchResult> {
-        val das = DartAnalysisServerService.getInstance(project)
-        das.updateFilesContent()
-
-        val result: MutableList<SearchResult> = ArrayList()
-
-        das.search_findElementReferences(file, offset) { searchResult ->
-            result += searchResult
+    // Calculation seems to be a lot, but it has a lot of early checks and seems fast enough
+    private fun isEventVisibleFastCalculation(e: AnActionEvent): Boolean {
+        val isInDartFile by lazy { e.isInDartFile() }
+        val isInFunction by lazy {
+            SpreadActionFunctionUtils.extractFunctionPlacementData(e) != null
         }
 
-        return result
+        return isInDartFile && isInFunction
     }
 
-    private fun performActionPrivate(event: AnActionEvent, actionData: ActionData) {
+    override fun update(e: AnActionEvent) {
+        e.presentation.isEnabled = isEventVisibleFastCalculation(e)
+    }
+
+    private fun performActionPrivate(actionData: ActionData) {
         val functionPlacement =
             SpreadActionFunctionUtils.extractFunctionPlacementData(actionData.dartFile, actionData.caret) ?: return
 
@@ -101,8 +87,17 @@ class SpreadAction : AnAction() {
         )
 
         val selection = selectFieldsWithDialog(project, callCompletionData)
+        // No problem, nothing is selected
+            ?: return
 
-        println(selection)
+        val text = selection.toFunctionInnerText()
+
+        project.runWriteAction(groupId = SPREAD_ACTION_GROUP_ID) {
+            // If there is calling values, delete it
+            // - the action probably could not have been triggered
+            document.deleteString(functionPlacement.parametersTextRange)
+            document.insertString(functionPlacement.parametersTextRange.first, text)
+        }
     }
 
     private fun selectFieldsWithDialog(
@@ -122,7 +117,7 @@ class SpreadAction : AnAction() {
         val actionData = tryCreateActionData(event) ?: return
 
         try {
-            performActionPrivate(event, actionData)
+            performActionPrivate(actionData)
         } catch (e: Exception) {
             e.printStackTrace()
 
@@ -137,46 +132,6 @@ class SpreadAction : AnAction() {
 
         }
 
-//        // Offset it -1, to get the element on the left side of the care
-//        val selectedElement = extractCurrentElement(actionData, offsetRelativeToCaret = -1)
-//        val selectedReference = extractCurrentReference(actionData)
-//
-//        val project = actionData.project
-//
-//        val das = DartAnalysisServerService.getInstance(project)
-//        das.updateFilesContent()
-//
-//
-//        val file = actionData.dartFile.virtualFile
-//
-//        val offset = actionData.caret.offset
-//        val completions = getCompletions(project, file, offset)
-//
-////        val references = findElementReferences(project, file, offset)
-//
-//        val dummyDocument = FileDocumentManager.getInstance().getDocument(file)
-//        val code = dummyDocument?.text ?: return
-//
-//        val addedText = "value."
-//        val newCode = code.substring(0 until offset) + addedText + code.substring(offset)
-//        val newOffset = offset + addedText.length
-
-//        val singleChangeId = "sdad"
-//
-//        project.runWriteAction(groupId = singleChangeId) {
-//            dummyDocument.insertString(offset, addedText)
-//        }
-//
-//        val newCompletions = getCompletions(project, file, offset + addedText.length)
-//
-//        project.runWriteAction(groupId = singleChangeId) {
-//            dummyDocument.insertString(offset, "- test 2 -")
-//        }
-//
-//        project.runWriteAction(groupId = singleChangeId) {
-//            dummyDocument.insertString(offset, "- test 3 -")
-//        }
-
         println("Performing action")
     }
 
@@ -189,45 +144,3 @@ class SpreadAction : AnAction() {
 
     }
 }
-
-//fun executeCompletionContributor(
-//    actionData: ActionData,
-//    completionType: CompletionType,
-//    invocationCount: Int
-//) {
-//    val contributors = CompletionContributor.forLanguage(DartLanguage.INSTANCE)
-//
-//    val initContext = CompletionInitializationContext(
-//        actionData.editor, actionData.caret, actionData.dartFile, completionType, invocationCount
-//    )
-//
-//    contributors[0].fillCompletionVariants()
-//
-//    contributors.forEach { it.beforeCompletion(initContext) }
-//    contributors.forEach { it.duringCompletion(initContext) }
-//    contributors.forEach { it.(initContext) }
-//
-//}
-
-
-//        val copiedFile = LightVirtualFile(file, code, LocalTimeCounter.currentTime());
-//
-//        FileDocumentManagerImpl.registerDocument(dummyDocument, copiedFile)
-//
-//        val dummyCompletions = getCompletions(actionData.project, copiedFile, offset)
-
-// Navigate to function and list all named argument parameters
-// das.analysis_getNavigation(file, actionData.caret.offset - 1, 0)
-
-// service.edit_getAssists(actionData.dartFile.virtualFile, actionData.caret.offset, 1)
-
-//        val contextFile = actionData.dartFile.originalFile.virtualFile
-//
-//        val contextOffset = selectedElement?.textOffset ?: return
-//
-//        val dummyDocument = FileDocumentManager.getInstance().getDocument(contextFile) ?: return
-//        val code = dummyDocument.text
-//        val offset = actionData.caret.offset
-//
-//        val suggestions =
-//            service.execution_getSuggestions(code, offset, contextFile, contextOffset, emptyList(), emptyList())

@@ -1,8 +1,11 @@
 package andrasferenczi.action.init
 
+import andrasferenczi.constants.Constants
 import andrasferenczi.ext.psi.findParentClassDefinition
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.editor.Caret
-import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiReference
@@ -18,9 +21,13 @@ fun extractCurrentReference(
 
     if (currentReference == null) {
         if (feedbackOnError) {
-            Messages.showErrorDialog(
-                "No reference was found at the caret.",
-                "No reference found"
+            Notifications.Bus.notify(
+                Notification(
+                    Constants.NOTIFICATION_ID,
+                    "No reference found",
+                    "No reference was found at the caret.",
+                    NotificationType.ERROR
+                )
             )
         }
 
@@ -53,9 +60,13 @@ fun extractCurrentElement(
 
     if (currentElement == null) {
         if (feedbackOnError) {
-            Messages.showErrorDialog(
-                "No element was found at the caret.",
-                "No element found"
+            Notifications.Bus.notify(
+                Notification(
+                    Constants.NOTIFICATION_ID,
+                    "No element found",
+                    "No element was found at the caret.",
+                    NotificationType.ERROR
+                )
             )
         }
 
@@ -75,9 +86,13 @@ fun tryExtractDartClassDefinition(
 
     if (dartClassBody == null) {
         if (feedbackOnError) {
-            Messages.showErrorDialog(
-                "The caret has to be placed inside the class in which the code generator should run",
-                "Caret is not inside the class"
+            Notifications.Bus.notify(
+                Notification(
+                    Constants.NOTIFICATION_ID,
+                    "Caret is not inside the class",
+                    "The caret has to be placed inside the class in which the code generator should run",
+                    NotificationType.ERROR
+                )
             )
         }
 
