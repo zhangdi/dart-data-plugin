@@ -6,6 +6,7 @@ import java.lang.RuntimeException
 
 // Todo: Field types as well
 enum class VariableKind(val visibleName: String) {
+    Field("Field"),
     Parameter("Parameter"),
     LocalVariable("Local Variable");
 
@@ -16,8 +17,9 @@ enum class VariableKind(val visibleName: String) {
 
         fun tryFromElementKind(kind: DartServerCompletionUtils.SuggestionElementKind): VariableKind? {
             return when (kind) {
-                DartServerCompletionUtils.SuggestionElementKind.LocalVariable -> LocalVariable
+                DartServerCompletionUtils.SuggestionElementKind.Field -> Field
                 DartServerCompletionUtils.SuggestionElementKind.Parameter -> Parameter
+                DartServerCompletionUtils.SuggestionElementKind.LocalVariable -> LocalVariable
                 else -> null
             }
         }

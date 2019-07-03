@@ -10,6 +10,7 @@ data class CompletionSuggestionData(
 
 fun List<CompletionSuggestion>.extractVariableHints(): List<VariableHint> {
     val variableKinds = setOf(
+        DartServerCompletionUtils.SuggestionElementKind.Field,
         DartServerCompletionUtils.SuggestionElementKind.Parameter,
         DartServerCompletionUtils.SuggestionElementKind.LocalVariable
     )
