@@ -14,6 +14,14 @@ object ConfigurationDataManager {
             configuration = configuration.copy(copyWithMethodName = it)
         }
 
+        properties.getValue(Keys.TO_MAP_METHOD_NAME)?.let {
+            configuration = configuration.copy(toMapMethodName = it)
+        }
+
+        properties.getValue(Keys.FROM_MAP_METHOD_NAME)?.let {
+            configuration = configuration.copy(fromMapMethodName = it)
+        }
+
         configuration = configuration.copy(
             useRequiredAnnotation = properties.getBoolean(
                 Keys.USE_REQUIRED_ANNOTATION,
@@ -70,6 +78,16 @@ object ConfigurationDataManager {
             ConfigurationData.DEFAULT_DATA.copyWithMethodName
         )
         properties.setValue(
+            Keys.TO_MAP_METHOD_NAME,
+            configurationData.toMapMethodName,
+            ConfigurationData.DEFAULT_DATA.toMapMethodName
+        )
+        properties.setValue(
+            Keys.FROM_MAP_METHOD_NAME,
+            configurationData.fromMapMethodName,
+            ConfigurationData.DEFAULT_DATA.fromMapMethodName
+        )
+        properties.setValue(
             Keys.USE_REQUIRED_ANNOTATION,
             configurationData.useRequiredAnnotation,
             ConfigurationData.DEFAULT_DATA.useRequiredAnnotation
@@ -106,6 +124,8 @@ object ConfigurationDataManager {
 
     private object Keys {
         const val COPY_WITH_METHOD_NAME = "dart-data-class.copy-with-method-name"
+        const val TO_MAP_METHOD_NAME = "dart-data-class.to-map-method-name"
+        const val FROM_MAP_METHOD_NAME = "dart-data-class.from-map-method-name"
         const val USE_REQUIRED_ANNOTATION = "dart-data-class.use-required-annotation"
         const val USE_NEW_KEYWORD = "dart-data-class.use-new-keyword"
         const val USE_CONST_KEYWORD_FOR_CONSTRUCTOR = "dart-data-class.use-const-keyword-for-constructor"

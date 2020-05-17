@@ -20,7 +20,7 @@ class DataClassConfigurable(
         return currentConfigurationData != lastSavedConfigurationData
     }
 
-    override fun getDisplayName(): String = "Dart Data Class Plugin"
+    override fun getDisplayName(): String = "Dart Data Generator"
 
     override fun apply() {
         val dataToSave = currentConfigurationData ?: throw RuntimeException("No data to save is available")

@@ -9,7 +9,9 @@ data class MapTemplateParams(
     val variables: List<AliasedVariableTemplateParam>,
     val useNewKeyword: Boolean,
     val addKeyMapper: Boolean,
-    val noImplicitCasts: Boolean
+    val noImplicitCasts: Boolean,
+    var toMapMethodName: String,
+    var fromMapMethodName: String
 )
 
 // The 2 will be generated with the same function
@@ -47,13 +49,13 @@ private fun Template.addAssignKeyMapperIfNotValid() {
 }
 
 private fun Template.addToMap(params: MapTemplateParams) {
-    val (_, variables, _, addKeyMapper, _) = params
+    val (_, variables, _, addKeyMapper, _, toMapMethodName, fromMapMethodName) = params
 
     isToReformat = true
 
     addTextSegment("Map<String, dynamic>")
     addSpace()
-    addTextSegment(TemplateConstants.TO_MAP_METHOD_NAME)
+    addTextSegment(toMapMethodName)
     withParentheses {
         if (addKeyMapper) {
             withCurlyBraces {
@@ -103,7 +105,7 @@ private fun Template.addToMap(params: MapTemplateParams) {
 private fun Template.addFromMap(
     params: MapTemplateParams
 ) {
-    val (className, variables, useNewKeyword, addKeyMapper, noImplicitCasts) = params
+    val (className, variables, useNewKeyword, addKeyMapper, noImplicitCasts, toMapMethodName, fromMethodName) = params
 
     isToReformat = true
 
@@ -111,7 +113,7 @@ private fun Template.addFromMap(
     addSpace()
     addTextSegment(className)
     addTextSegment(".")
-    addTextSegment(TemplateConstants.FROM_MAP_METHOD_NAME)
+    addTextSegment(fromMethodName)
     withParentheses {
         if (addKeyMapper) {
             addNewLine()
@@ -175,7 +177,7 @@ private fun Template.addFromMap(
                     }
                 }
 
-                if(noImplicitCasts) {
+                if (noImplicitCasts) {
                     addSpace()
                     addTextSegment("as")
                     addSpace()

@@ -6,6 +6,8 @@ import andrasferenczi.templater.TemplateConstants
 // Default values
 data class ConfigurationData(
     val copyWithMethodName: String,
+    val toMapMethodName: String,
+    val fromMapMethodName: String,
     val useRequiredAnnotation: Boolean,
     val useNewKeyword: Boolean,
     val useConstForConstructor: Boolean,
@@ -16,6 +18,8 @@ data class ConfigurationData(
     companion object {
         val DEFAULT_DATA = ConfigurationData(
             copyWithMethodName = TemplateConstants.COPYWITH_DEFAULT_METHOD_NAME,
+            toMapMethodName = TemplateConstants.TO_MAP_METHOD_NAME,
+            fromMapMethodName = TemplateConstants.FROM_MAP_METHOD_NAME,
             useRequiredAnnotation = true,
             useNewKeyword = true,
             useConstForConstructor = true,
@@ -26,6 +30,8 @@ data class ConfigurationData(
 
         val TEST_DATA = ConfigurationData(
             copyWithMethodName = "testData",
+            toMapMethodName = TemplateConstants.TO_MAP_METHOD_NAME,
+            fromMapMethodName = TemplateConstants.FROM_MAP_METHOD_NAME,
             useRequiredAnnotation = true,
             useNewKeyword = false,
             useConstForConstructor = false,

@@ -15,6 +15,6 @@ fun createMapDeleteCall(
         toMapMethod,
         fromMapMethod
     )
-        .map { { it.delete() } }
+        .map { { if(!it.isAbstract) it.delete() } }
         .mergeCalls()
 }

@@ -43,43 +43,59 @@ fun createConfigurationUI(input: ConfigurationData): ConfigurationUIElements {
         }
     )
 
-    val useRequiredAnnotationCheckBox = JCheckBox(
-        "add @required to constructor parameters",
-        input.useRequiredAnnotation
-    )
-    // ROW 2
+    // ROW2
     pane.add(
-        useRequiredAnnotationCheckBox,
+        JLabel("name of the toMap method"),
         GridBagConstraints().apply {
             fill = GridBagConstraints.HORIZONTAL
             gridx = 0
+            gridy = 1
+            insets = Insets(TOP_INSET, NO_CHECKBOX_LEFT_INSET, BOTTOM_INSET, RIGHT_INSET)
+        }
+    )
+    val toMapMethodNameTextField = JTextField(input.toMapMethodName)
+    pane.add(
+        toMapMethodNameTextField,
+        GridBagConstraints().apply {
+            fill = GridBagConstraints.HORIZONTAL
+            weightx = 0.6
+            gridx = 1
             gridy = 1
             insets = Insets(TOP_INSET, CHECKBOX_LEFT_INSET, BOTTOM_INSET, RIGHT_INSET)
         }
     )
 
-    // ROW 3
-    val useNewKeywordCheckbox = JCheckBox(
-        "use the 'new' keyword",
-        input.useNewKeyword
-    )
+    // ROW3
     pane.add(
-        useNewKeywordCheckbox,
+        JLabel("name of the fromMap method"),
         GridBagConstraints().apply {
             fill = GridBagConstraints.HORIZONTAL
             gridx = 0
+            gridy = 2
+            insets = Insets(TOP_INSET, NO_CHECKBOX_LEFT_INSET, BOTTOM_INSET, RIGHT_INSET)
+        }
+    )
+
+    val fromMapMethodNameTextField = JTextField(input.fromMapMethodName)
+    pane.add(
+        fromMapMethodNameTextField,
+        GridBagConstraints().apply {
+            fill = GridBagConstraints.HORIZONTAL
+            weightx = 0.6
+            gridx = 1
             gridy = 2
             insets = Insets(TOP_INSET, CHECKBOX_LEFT_INSET, BOTTOM_INSET, RIGHT_INSET)
         }
     )
 
     // ROW 4
-    val useConstKeywordForConstructorCheckbox = JCheckBox(
-        "use the 'const' keyword for the constructor if possible",
-        input.useConstForConstructor
+    val useRequiredAnnotationCheckBox = JCheckBox(
+        "add @required to constructor parameters",
+        input.useRequiredAnnotation
     )
+
     pane.add(
-        useConstKeywordForConstructorCheckbox,
+        useRequiredAnnotationCheckBox,
         GridBagConstraints().apply {
             fill = GridBagConstraints.HORIZONTAL
             gridx = 0
@@ -89,11 +105,12 @@ fun createConfigurationUI(input: ConfigurationData): ConfigurationUIElements {
     )
 
     // ROW 5
-    val optimizeConstCopyCheckbox = JCheckBox(
-        "copy function should return the same instance if the only passed in variables are private"
+    val useNewKeywordCheckbox = JCheckBox(
+        "use the 'new' keyword",
+        input.useNewKeyword
     )
     pane.add(
-        optimizeConstCopyCheckbox,
+        useNewKeywordCheckbox,
         GridBagConstraints().apply {
             fill = GridBagConstraints.HORIZONTAL
             gridx = 0
@@ -103,12 +120,12 @@ fun createConfigurationUI(input: ConfigurationData): ConfigurationUIElements {
     )
 
     // ROW 6
-    val addKeyMapperForMapCheckbox = JCheckBox(
-        "add key mapper function parameter for `toMap` and `fromMap`"
+    val useConstKeywordForConstructorCheckbox = JCheckBox(
+        "use the 'const' keyword for the constructor if possible",
+        input.useConstForConstructor
     )
-
     pane.add(
-        addKeyMapperForMapCheckbox,
+        useConstKeywordForConstructorCheckbox,
         GridBagConstraints().apply {
             fill = GridBagConstraints.HORIZONTAL
             gridx = 0
@@ -118,6 +135,35 @@ fun createConfigurationUI(input: ConfigurationData): ConfigurationUIElements {
     )
 
     // ROW 7
+    val optimizeConstCopyCheckbox = JCheckBox(
+        "copy function should return the same instance if the only passed in variables are private"
+    )
+    pane.add(
+        optimizeConstCopyCheckbox,
+        GridBagConstraints().apply {
+            fill = GridBagConstraints.HORIZONTAL
+            gridx = 0
+            gridy = 6
+            insets = Insets(TOP_INSET, CHECKBOX_LEFT_INSET, BOTTOM_INSET, RIGHT_INSET)
+        }
+    )
+
+    // ROW 8
+    val addKeyMapperForMapCheckbox = JCheckBox(
+        "add key mapper function parameter for `toMap` and `fromMap`"
+    )
+
+    pane.add(
+        addKeyMapperForMapCheckbox,
+        GridBagConstraints().apply {
+            fill = GridBagConstraints.HORIZONTAL
+            gridx = 0
+            gridy = 7
+            insets = Insets(TOP_INSET, CHECKBOX_LEFT_INSET, BOTTOM_INSET, RIGHT_INSET)
+        }
+    )
+
+    // ROW 9
     val noImplicitCastsCheckbox = JCheckBox(
         "no implicit casts"
     )
@@ -127,7 +173,7 @@ fun createConfigurationUI(input: ConfigurationData): ConfigurationUIElements {
         GridBagConstraints().apply {
             fill = GridBagConstraints.HORIZONTAL
             gridx = 0
-            gridy = 6
+            gridy = 8
             insets = Insets(TOP_INSET, CHECKBOX_LEFT_INSET, BOTTOM_INSET, RIGHT_INSET)
         }
     )
@@ -138,7 +184,7 @@ fun createConfigurationUI(input: ConfigurationData): ConfigurationUIElements {
         GridBagConstraints().apply {
             weighty = 1.0   // request any extra vertical space
             anchor = GridBagConstraints.PAGE_END // bottom of space
-            gridy = 7
+            gridy = 9
             gridwidth = 2
         }
     )
@@ -146,6 +192,8 @@ fun createConfigurationUI(input: ConfigurationData): ConfigurationUIElements {
     return ConfigurationUIElements(
         pane,
         copyWithNameTextField,
+        toMapMethodNameTextField,
+        fromMapMethodNameTextField,
         useRequiredAnnotationCheckBox,
         useNewKeywordCheckbox,
         useConstKeywordForConstructorCheckbox,
